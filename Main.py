@@ -1,16 +1,16 @@
 # Token Types
-#
+# Following Rusland Lets build a compiler
 # EOF (end-of-title) token is used to indicate that
 # there is no more input left for lexical analysis
 
-INTEGER, PLUS, EOF = 'INTEGER', 'PLUS', 'EOF'
+INTEGER, PLUS, EOF, MINUS = 'INTEGER', 'PLUS', 'EOF', 'MINUS'
 
 class Token(object):
 	def __init__(self, type, value):
 		
 		#token type: INTEGER, PLUS or EOF
 		self.type = type
-		# token value: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '+', or None
+		# token value: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, '+', '-' or None
 		self.value = value
 
 	def __str__(self):
@@ -72,6 +72,11 @@ class Interpreter(object):
 			self.pos += 1
 			return token
 
+		if current_Char == '-':
+			token = Token(MINUS, current_Char)
+			self.pos += 1
+			return token
+
 		self.error()
 
 	def eat(self, token_Type):
@@ -95,7 +100,11 @@ class Interpreter(object):
 
 		# we expect the current token to be a '+' token
 		op = self.current_Token
-		self.eat(PLUS)
+
+		if op.type == PLUS:
+			self.eat(PLUS)
+		else:
+			self.eat(MINUS)
 
 		#we expect the current token to be a single-digit integer
 		right = self.current_Token
@@ -107,7 +116,10 @@ class Interpreter(object):
 		# has been successfully found and the method can just
 		# return the result of adding two integers, thus
 		# effectively interpreting client input
-		result = left.value + right.value
+		if op.type == PLUS:
+			result = left.value + right.value
+		else:
+			result = left.value - right.value
 		return result
 
 def main():
