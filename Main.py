@@ -37,47 +37,55 @@ class Interpreter(object):
 		self.pos = 0
 		# current token instance
 		self.current_token = None
+		# sets current char to the respective position in the text
+	        self.current_Char = self.text[self.pos]
 
 	def error(self):
 		raise exception('Error parsing input')
 
+	def next_Char(self):
+		self.pos += 1
+		
+		if self.pos > len(self.text) -1:
+			self.current_Char = None
+		else:
+			self.current_Char = self.text[self.pos]
+
+	def skip_Whitespace(self):
+		while self.current_Char is not None and self.current_Char.isspace():
+			self.next_Char()
+		
+	def join_Integer(self):
+		
+		result = ''
+		
+		while self.current_Char is not None and self.current_Char.isdigit():
+			result += self.current_Char
+			self.next_Char()
+		return int(result)
+
 	def get_Next_Token(self):
-		"""Lexical analyser (also known as scanner or tokenizer)
+		
+		while self.current_Char is not None:
 
-		This method is responsible for breaking a sentence aart 		into tokens. One token at a time.
-		"""
-		text = self.text
+			if self.current_Char.isspace():
+				self.skip_Whitespace()
+				continue
 
-		# is self.pos index past the end of the self.text?
-		# if so, then return EOF token because there is no more
-		# input left to convert into tokens.
-		if self.pos > len(text) - 1:
-			return Token(EOF, None)
+			if self.current_Char.isdigit():
+				return Token(INTEGER, self.join_Integer())
 
-		# get a character at the position self.pos and decide
-		# what token to create based on the single character
-		current_Char = text[self.pos]
+			if self.current_Char == '+':
+				self.next_Char()
+				return Token(PLUS, self.current_Char)
 
-		# if the character is a digit then convert it to
-		# integer, create an INTEGER token, increment self.pos
-		# index to point to the next character after the digit,
-		# and return the INTEGER token.
-		if current_Char.isdigit():
-			token = Token(INTEGER, int(current_Char))
-			self.pos += 1
-			return token
+			if self.current_Char == '-':
+				self.next_Char()
+				return Token(MINUS, self.current_Char)
 
-		if current_Char == '+':
-			token = Token(PLUS, current_Char)
-			self.pos += 1
-			return token
-
-		if current_Char == '-':
-			token = Token(MINUS, current_Char)
-			self.pos += 1
-			return token
-
-		self.error()
+			self.error()
+		
+		return Token(EOF, None)
 
 	def eat(self, token_Type):
 		# compare the current token type with the passed token
