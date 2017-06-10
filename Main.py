@@ -46,7 +46,7 @@ class Interpreter(object):
 	def next_Char(self):
 		self.pos += 1
 		
-		if self.pos > len(self.text) -1:
+		if self.pos > len(self.text) - 1:
 			self.current_Char = None
 		else:
 			self.current_Char = self.text[self.pos]
@@ -104,46 +104,35 @@ class Interpreter(object):
 			self.current_Token = self.get_Next_Token()
 		else:
 			self.error()
+		
+	def term(self):
 
+		token = self.current_Token
+		self.eat(INTEGER)
+		return token.value
+		
 	def expr(self):
-		"""expr -> INTEGER PLUS INTEGER"""
+	
 		# set current token to the first token taken from the input
 		self.current_Token = self.get_Next_Token()
+		
+		result = self.term()
 
-		# we expect the current token to be an integer
-		left = self.current_Token
-		self.eat(INTEGER)
+		while self.current_Token.type in (PLUS, MINUS, MUL, DIV):
+			token = self.current_Token
 
-		# we expect the current token to be a '+' token
-		op = self.current_Token
-
-		if op.type == PLUS:
-			self.eat(PLUS)
-		elif op.type == MINUS:
-			self.eat(MINUS)
-		elif op.type == MUL:
-			self.eat(MUL)
-		else:
-			self.eat(DIV)
-			
-		#we expect the current token to be a single-digit integer
-		right = self.current_Token
-		self.eat(INTEGER)
-		# after the above call the self.currentToken is set to
-		# EOF token
-
-		# at this point INTEGER PLUS INTEGER sequence of tokens
-		# has been successfully found and the method can just
-		# return the result of adding two integers, thus
-		# effectively interpreting client input
-		if op.type == PLUS:
-			result = left.value + right.value
-		elif op.type == MINUS:
-			result = left.value - right.value
-		elif op.type == MUL:
-			result = left.value * right.value
-		else:
-			result = left.value / right.value
+			if token.type == PLUS:
+				self.eat(PLUS)
+				result = result + self.term()
+			elif token.type == MINUS:
+				self.eat(MINUS)
+				result = result - self.term()
+			elif token.type == MUL:
+				self.eat(MUL)
+				result = result * self.term()
+			elif token.type == DIV:
+				self.eat(DIV)
+				result = result / self.term()
 		return result
 
 def main():
