@@ -3,7 +3,7 @@
 # EOF (end-of-title) token is used to indicate that
 # there is no more input left for lexical analysis
 
-INTEGER, PLUS, EOF, MINUS = 'INTEGER', 'PLUS', 'EOF', 'MINUS'
+INTEGER, PLUS, EOF, MINUS, MUL, DIV = 'INTEGER', 'PLUS', 'EOF', 'MINUS', 'MUL', 'DIV'
 
 class Token(object):
 	def __init__(self, type, value):
@@ -83,6 +83,14 @@ class Interpreter(object):
 				self.next_Char()
 				return Token(MINUS, self.current_Char)
 
+			if self.current_Char == '*':
+				self.next_Char()
+				return Token(MUL, self.current_Char)
+
+			if self.current_Char == '/':
+				self.next_Char()
+				return Token(DIV, self.current_Char)
+
 			self.error()
 		
 		return Token(EOF, None)
@@ -102,7 +110,7 @@ class Interpreter(object):
 		# set current token to the first token taken from the input
 		self.current_Token = self.get_Next_Token()
 
-		# we expect the current token to be a single-digit integer
+		# we expect the current token to be an integer
 		left = self.current_Token
 		self.eat(INTEGER)
 
@@ -111,9 +119,13 @@ class Interpreter(object):
 
 		if op.type == PLUS:
 			self.eat(PLUS)
-		else:
+		elif op.type == MINUS:
 			self.eat(MINUS)
-
+		elif op.type == MUL:
+			self.eat(MUL)
+		else:
+			self.eat(DIV)
+			
 		#we expect the current token to be a single-digit integer
 		right = self.current_Token
 		self.eat(INTEGER)
@@ -126,8 +138,12 @@ class Interpreter(object):
 		# effectively interpreting client input
 		if op.type == PLUS:
 			result = left.value + right.value
-		else:
+		elif op.type == MINUS:
 			result = left.value - right.value
+		elif op.type == MUL:
+			result = left.value * right.value
+		else:
+			result = left.value / right.value
 		return result
 
 def main():
