@@ -38,7 +38,7 @@ class Interpreter(object):
 		# current token instance
 		self.current_token = None
 		# sets current char to the respective position in the text
-	        self.current_Char = self.text[self.pos]
+		self.current_Char = self.text[self.pos]
 
 	def error(self):
 		raise exception('Error parsing input')
@@ -140,7 +140,7 @@ def main():
 		try:
 			# To run under Python3 replace 'rawInput' call
 			# with 'input'
-			text = raw_input('calc> ')
+			text = input('calc> ')
 		except EOFError:
 			break
 		if not text:
@@ -151,5 +151,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-
