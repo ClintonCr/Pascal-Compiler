@@ -125,7 +125,6 @@ class Interpreter(object):
         
 
     def factor(self):
-        token = self.current_token
 
         """factor : INTEGER | LPAREN expr RPAREN"""
         token = self.current_token
