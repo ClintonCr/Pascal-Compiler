@@ -32,7 +32,8 @@ class Token(object):
 
 RESERVE_KEYWORDS = {
     'BEGIN': Token('BEGIN', 'BEGIN'),
-    'END': Token('END', 'END')
+    'END': Token('END', 'END'),
+    'DIV': Token('DIV','DIV')
 }
 
 class Lexer(object):
