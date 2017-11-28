@@ -121,10 +121,6 @@ class Lexer(object):
                 self.next_char()
                 return Token(MUL, self.current_char)
 
-            if self.current_char == '/':
-                self.next_char()
-                return Token(DIV, self.current_char)
-
             if self.current_char == '(':
                 self.next_char()
                 return Token(LBRACKET, '(')
