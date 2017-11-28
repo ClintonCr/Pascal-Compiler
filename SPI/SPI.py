@@ -80,7 +80,7 @@ class Lexer(object):
     def _id(self):
         result = ''
         while self.current_char is not None and self.current_char.isalnum():
-            result += self.current_char
+            result += self.current_char.upper()
             self.next_char()
 
         token = RESERVE_KEYWORDS.get(result,Token(ID,result))
@@ -174,7 +174,7 @@ class Assign(AST):
 class Var(AST):
     def __init__(self,token):
         self.token = token
-        self.value = token.value
+        self.value = token.value.upper()
 
 class NoOp(AST):
     pass
@@ -362,7 +362,7 @@ class Interpreter(NodeVisitor):
 
     def visit_Assign(self,node):
         var_name = node.left.value
-        self.GLOBAL_SCOPE[var_name] = self.visit(node.right)
+        self.GLOBAL_SCOPE[var_name.upper()] = self.visit(node.right)
 
     def visit_Var(self,node):
         var_name = node.value
