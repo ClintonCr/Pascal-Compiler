@@ -32,7 +32,8 @@ class Token(object):
 
 RESERVE_KEYWORDS = {
     'BEGIN': Token('BEGIN', 'BEGIN'),
-    'END': Token('END', 'END')
+    'END': Token('END', 'END'),
+    'DIV': Token('DIV','DIV')
 }
 
 class Lexer(object):
@@ -79,8 +80,8 @@ class Lexer(object):
 
     def _id(self):
         result = ''
-        while self.current_char is not None and self.current_char.isalnum():
-            result += self.current_char
+        while self.current_char is not None and (self.current_char.isalnum() or self.current_char == '_'):
+            result += self.current_char.upper()
             self.next_char()
 
         token = RESERVE_KEYWORDS.get(result,Token(ID,result))
@@ -96,7 +97,7 @@ class Lexer(object):
             if self.current_char.isdigit():
                 return Token(INTEGER, self.join_Integer())
 
-            if self.current_char.isalnum():
+            if self.current_char.isalnum() or self.current_char == '_':
                 return self._id()
 
             if self.current_char == ':' and self.peek() == '=':
@@ -119,10 +120,6 @@ class Lexer(object):
             if self.current_char == '*':
                 self.next_char()
                 return Token(MUL, self.current_char)
-
-            if self.current_char == '/':
-                self.next_char()
-                return Token(DIV, self.current_char)
 
             if self.current_char == '(':
                 self.next_char()
@@ -174,7 +171,7 @@ class Assign(AST):
 class Var(AST):
     def __init__(self,token):
         self.token = token
-        self.value = token.value
+        self.value = token.value.upper()
 
 class NoOp(AST):
     pass
@@ -362,7 +359,7 @@ class Interpreter(NodeVisitor):
 
     def visit_Assign(self,node):
         var_name = node.left.value
-        self.GLOBAL_SCOPE[var_name] = self.visit(node.right)
+        self.GLOBAL_SCOPE[var_name.upper()] = self.visit(node.right)
 
     def visit_Var(self,node):
         var_name = node.value
